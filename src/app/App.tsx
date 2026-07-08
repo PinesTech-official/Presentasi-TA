@@ -142,11 +142,11 @@ function Navbar() {
       style={{ background: "rgba(6,13,26,0.92)", backdropFilter: "blur(16px)" }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
         <a href="#" className="flex items-center gap-2 group">
-          <span className="font-['Exo_2'] font-black text-xl tracking-widest text-[#00c8f8] group-hover:text-white transition-colors">
-            AUTO<span className="text-white">PONG</span>
+          <span className="font-['Exo_2'] font-black text-xl tracking-tight text-[#00c8f8] group-hover:text-white transition-colors">
+            TA <span className="text-white">Raflie</span>
           </span>
           <span className="hidden sm:block font-['JetBrains_Mono'] text-xs text-muted-foreground border border-border px-2 py-0.5 rounded">
-            TA / 2026
+            2026
           </span>
         </a>
 
@@ -157,12 +157,24 @@ function Navbar() {
               {l.label}
             </a>
           ))}
+          <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
+            className="ml-2 inline-flex items-center gap-1.5 bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-4 py-1.5 rounded hover:bg-white transition-colors">
+            <ExternalLink className="w-3.5 h-3.5" />
+            CV / Portfolio
+          </a>
         </div>
 
-        <button className="md:hidden text-muted-foreground hover:text-foreground p-2"
-          onClick={() => setOpen(!open)} aria-label="Toggle menu">
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-xs px-3 py-1.5 rounded hover:bg-white transition-colors">
+            <ExternalLink className="w-3 h-3" />
+            CV
+          </a>
+          <button className="text-muted-foreground hover:text-foreground p-2"
+            onClick={() => setOpen(!open)} aria-label="Toggle menu">
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -173,6 +185,13 @@ function Navbar() {
               {l.label}
             </a>
           ))}
+          <div className="pt-2 mt-1 border-t border-border">
+            <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 w-full bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-4 py-2.5 rounded hover:bg-white transition-colors">
+              <ExternalLink className="w-4 h-4" />
+              Lihat CV / Portfolio Saya
+            </a>
+          </div>
         </div>
       )}
     </nav>
@@ -198,9 +217,12 @@ function Hero() {
             <span className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-wider">TUGAS AKHIR — 2026</span>
           </div>
 
-          <h1 className="font-['Exo_2'] font-black text-5xl sm:text-6xl lg:text-7xl leading-none tracking-tight text-white mb-4">
-            AUTO<br /><span className="text-[#00c8f8]">PONG</span>
+          <h1 className="font-['Exo_2'] font-black text-4xl sm:text-5xl lg:text-6xl leading-none tracking-tight text-white mb-2">
+            TA <span className="text-[#00c8f8]">Raflie</span><br />
+            <span className="text-2xl sm:text-3xl lg:text-4xl text-muted-foreground font-semibold">Nurivansyah</span>
           </h1>
+
+          <div className="font-['JetBrains_Mono'] text-sm text-[#00c8f8]/70 mb-2 tracking-wider">— AUTOPONG</div>
 
           <p className="font-['DM_Sans'] text-lg text-muted-foreground mb-2 leading-relaxed">
             Sistem Peluncur Bola Ping-Pong Otomatis Berbasis{" "}
@@ -218,6 +240,10 @@ function Hero() {
             <a href="#resources"
               className="inline-flex items-center gap-2 border border-border text-foreground font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:border-[#00c8f8]/50 hover:text-[#00c8f8] transition-colors">
               Resources <ExternalLink className="w-4 h-4" />
+            </a>
+            <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 border border-[#00c8f8]/40 text-[#00c8f8] font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:bg-[#00c8f8]/10 transition-colors">
+              CV / Portfolio <ExternalLink className="w-4 h-4" />
             </a>
           </div>
         </div>
@@ -1275,9 +1301,10 @@ function Footer() {
     <footer className="border-t border-border py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div>
-          <div className="font-['Exo_2'] font-black text-xl tracking-widest text-[#00c8f8] mb-1">
-            AUTO<span className="text-white">PONG</span>
+          <div className="font-['Exo_2'] font-black text-xl tracking-tight text-[#00c8f8] mb-0.5">
+            TA <span className="text-white">Raflie Nurivansyah</span>
           </div>
+          <p className="font-['JetBrains_Mono'] text-xs text-[#00c8f8]/60 mb-1">AUTOPONG</p>
           <p className="font-['DM_Sans'] text-sm text-muted-foreground">Tugas Akhir — Sistem Peluncur Bola Ping-Pong Otomatis</p>
         </div>
         <div className="text-right">
