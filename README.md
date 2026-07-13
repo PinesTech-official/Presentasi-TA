@@ -1,7 +1,7 @@
 
-  # Create Project Website
+  # Create Project Website (Copy)
 
-  This is a code bundle for Create Project Website. The original project is available at https://www.figma.com/design/VY0S7wqlBM6BqGV0f9l8fM/Create-Project-Website.
+  This is a code bundle for Create Project Website (Copy). The original project is available at https://www.figma.com/design/8pzQf8TIkk4rAtMQsCJ7wN/Create-Project-Website--Copy-.
 
   ## Running the code
 

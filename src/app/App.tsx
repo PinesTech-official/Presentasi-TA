@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { ReactNode } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import img1 from "@/imports/image-1779172040121.jpg";
 import img2 from "@/imports/20260428_013533.jpg";
@@ -6,12 +7,65 @@ import img3 from "@/imports/20260428_152533.jpg";
 import img4 from "@/imports/20260429_212530.jpg";
 import img5 from "@/imports/20260524_135809.jpg";
 import img6 from "@/imports/20260530_210611.jpg";
+import logoTL from "@/imports/logo_TLI__2_-Photoroom.png";
 import {
   Menu, X, ExternalLink, ChevronDown, Cpu, Zap, Settings,
   Activity, FolderOpen, Code2, FileText, Database,
   ChevronLeft, ChevronRight, BarChart2, TrendingUp,
-  Wifi, Radio, Server, ArrowRight, Gift, Heart, Layers,
+  Wifi, Radio, Server, ArrowRight, Gift, Heart, Layers, Sun, Moon,
 } from "lucide-react";
+
+// ─── SCROLL REVEAL ────────────────────────────────────────────────────────────
+
+function Reveal({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setVisible(true); return; }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setVisible(true); io.disconnect(); }
+      },
+      { threshold: 0.06, rootMargin: "0px 0px -6% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className={`reveal${visible ? " is-visible" : ""}`}>
+      {children}
+    </div>
+  );
+}
+
+// ─── THEME TOGGLE ─────────────────────────────────────────────────────────────
+
+type Theme = "dark" | "light";
+
+function useTheme(): [Theme, () => void] {
+  const [theme, setTheme] = useState<Theme>("dark");
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (theme === "light") root.classList.add("light");
+    else root.classList.remove("light");
+  }, [theme]);
+  return [theme, () => setTheme((t) => (t === "dark" ? "light" : "dark"))];
+}
+
+function ThemeToggle({ theme, onToggle, className }: { theme: Theme; onToggle: () => void; className?: string }) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-label={theme === "dark" ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
+      className={`inline-flex items-center justify-center w-9 h-9 rounded-lg border border-border text-muted-foreground hover:text-[#f5c518] hover:border-[#f5c518]/40 transition-colors ${className ?? ""}`}>
+      {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+    </button>
+  );
+}
 
 // ─── STATIC DATA (no JSX at module level) ───────────────────────────────────
 
@@ -65,11 +119,11 @@ const PHOTOS = [
 ];
 
 const COMPONENT_DATA = [
-  { iconName: "cpu",      name: "ESP32",             role: "Mikrokontroler Utama", spec: "240 MHz dual-core, WiFi & Bluetooth onboard",             color: "#00c8f8" },
-  { iconName: "zap",      name: "L298N Motor Driver", role: "Driver Motor DC",      spec: "Dual H-Bridge, 2A per channel, 5–35V",                   color: "#ff6b35" },
+  { iconName: "cpu",      name: "ESP32",             role: "Mikrokontroler Utama", spec: "240 MHz dual-core, WiFi & Bluetooth onboard",             color: "#f5c518" },
+  { iconName: "zap",      name: "L298N Motor Driver", role: "Driver Motor DC",      spec: "Dual H-Bridge, 2A per channel, 5–35V",                   color: "#e8605a" },
   { iconName: "settings", name: "DC Motor",           role: "Mekanisme Launcher",   spec: "High-RPM motor untuk lontaran bola ping-pong",            color: "#a3b8d8" },
-  { iconName: "activity", name: "Relay Module",       role: "Switching Kontrol",    spec: "2-channel relay, 10A 250VAC, opto-isolated",              color: "#00c8f8" },
-  { iconName: "zap",      name: "Switching PSU",      role: "Catu Daya Sistem",     spec: "5V/12V regulated, arus stabil untuk semua komponen",      color: "#ff6b35" },
+  { iconName: "activity", name: "Relay Module",       role: "Switching Kontrol",    spec: "2-channel relay, 10A 250VAC, opto-isolated",              color: "#f5c518" },
+  { iconName: "zap",      name: "Switching PSU",      role: "Catu Daya Sistem",     spec: "5V/12V regulated, arus stabil untuk semua komponen",      color: "#e8605a" },
   { iconName: "cpu",      name: "Corong & Dispenser", role: "Mekanisme Ball Feed",  spec: "Sistem peluncur bola ping-pong otomatis berbasis gravitasi", color: "#a3b8d8" },
 ];
 
@@ -83,9 +137,9 @@ const TIMELINE = [
 ];
 
 const RESOURCE_DATA = [
-  { iconName: "file",     title: "Dokumentasi Pengerjaan TA", desc: "Dokumentasi lengkap selama proses pengerjaan Tugas Akhir — foto, catatan, dan progress laporan dari awal hingga akhir.", link: "https://drive.google.com/drive/folders/1S7NoR088X5DaCdLxzM2XtHSusuFoiayk", color: "#00c8f8" },
-  { iconName: "database", title: "Rekap Data",                desc: "Kumpulan data hasil pengujian Autopong — performa launcher, kecepatan bola, konsistensi lontaran, dan analisis statistik.",     link: "https://drive.google.com/drive/folders/1yPCkfyzhHui20bvpzhG-B7z8Vre1P7Na", color: "#ff6b35" },
-  { iconName: "code",     title: "Code Autopong",             desc: "Source code firmware ESP32 Autopong — kontrol motor DC, logika relay, konfigurasi PWM, dan sistem peluncur bola ping-pong otomatis.", link: "https://drive.google.com/drive/folders/1gcDdH9tvrbBjdR87syKsXYxbO97XCsRt", color: "#00c8f8" },
+  { iconName: "file",     title: "Dokumentasi Pengerjaan TA", desc: "Dokumentasi lengkap selama proses pengerjaan Tugas Akhir — foto, catatan, dan progress laporan dari awal hingga akhir.", link: "https://drive.google.com/drive/folders/1S7NoR088X5DaCdLxzM2XtHSusuFoiayk", color: "#f5c518" },
+  { iconName: "database", title: "Rekap Data",                desc: "Kumpulan data hasil pengujian Autopong — performa launcher, kecepatan bola, konsistensi lontaran, dan analisis statistik.",     link: "https://drive.google.com/drive/folders/1yPCkfyzhHui20bvpzhG-B7z8Vre1P7Na", color: "#e8605a" },
+  { iconName: "code",     title: "Code Autopong",             desc: "Source code firmware ESP32 Autopong — kontrol motor DC, logika relay, konfigurasi PWM, dan sistem peluncur bola ping-pong otomatis.", link: "https://drive.google.com/drive/folders/1gcDdH9tvrbBjdR87syKsXYxbO97XCsRt", color: "#f5c518" },
   { iconName: "folder",   title: "File Tugas Akhir",          desc: "Berkas lengkap Tugas Akhir — laporan, proposal, presentasi, dan semua dokumen resmi yang dibutuhkan untuk sidang.",             link: "https://drive.google.com/drive/folders/1RIH6ZjHhlWI4cnVoScGKPoEC3lEn7qqX", color: "#a3b8d8" },
 ];
 
@@ -112,7 +166,7 @@ const likeData = [
   { name: "Percobaan 5", "Jumlah Like": 38, Dieksekusi: 34, "Data Loss": 4 },
 ];
 
-const LINE_COLORS = ["#00c8f8", "#ff6b35", "#a3b8d8", "#4ade80"];
+const LINE_COLORS = ["#f5c518", "#e8605a", "#a3b8d8", "#4ade80"];
 type TabId = "response" | "gift" | "like";
 
 // ─── SMALL HELPERS ───────────────────────────────────────────────────────────
@@ -134,39 +188,43 @@ function Icon({ name, className }: { name: string; className?: string }) {
 
 // ─── NAVBAR ──────────────────────────────────────────────────────────────────
 
-function Navbar() {
+function Navbar({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border"
-      style={{ background: "rgba(6,13,26,0.92)", backdropFilter: "blur(16px)" }}>
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2 group">
-          <span className="font-['Exo_2'] font-black text-xl tracking-tight text-[#00c8f8] group-hover:text-white transition-colors">
-            TA <span className="text-white">Raflie</span>
-          </span>
-          <span className="hidden sm:block font-['JetBrains_Mono'] text-xs text-muted-foreground border border-border px-2 py-0.5 rounded">
-            2026
-          </span>
+        <a href="#" className="flex items-center gap-2 group min-w-0">
+          <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-9 h-9 object-contain shrink-0" />
+          <div className="flex flex-col leading-none min-w-0">
+            <span className="font-['Exo_2'] font-black text-sm tracking-tight text-[#f5c518] group-hover:text-foreground transition-colors truncate">
+              TA Raflie Nurivansyah
+            </span>
+            <span className="font-['JetBrains_Mono'] text-[10px] text-muted-foreground tracking-wider hidden sm:block truncate">
+              D3 Teknik Listrik Industri · Poltera · 2026
+            </span>
+          </div>
         </a>
 
         <div className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((l) => (
             <a key={l.href} href={l.href}
-              className="px-3 py-2 rounded text-sm font-['DM_Sans'] font-medium text-muted-foreground hover:text-[#00c8f8] transition-colors">
+              className="px-3 py-2 rounded text-sm font-['DM_Sans'] font-medium text-muted-foreground hover:text-[#f5c518] transition-colors">
               {l.label}
             </a>
           ))}
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} className="ml-1" />
           <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
-            className="ml-2 inline-flex items-center gap-1.5 bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-4 py-1.5 rounded hover:bg-white transition-colors">
+            className="ml-2 inline-flex items-center gap-1.5 bg-[#f5c518] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-4 py-1.5 rounded hover:bg-[#d9ab0a] transition-colors">
             <ExternalLink className="w-3.5 h-3.5" />
             CV / Portfolio
           </a>
         </div>
 
         <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-xs px-3 py-1.5 rounded hover:bg-white transition-colors">
+            className="inline-flex items-center gap-1 bg-[#f5c518] text-[#060d1a] font-['DM_Sans'] font-semibold text-xs px-3 py-1.5 rounded hover:bg-[#d9ab0a] transition-colors">
             <ExternalLink className="w-3 h-3" />
             CV
           </a>
@@ -178,16 +236,16 @@ function Navbar() {
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-border bg-card/95 px-4 py-3 flex flex-col gap-1">
+        <div className="md:hidden border-t border-border bg-card/98 backdrop-blur-sm px-4 py-3 flex flex-col gap-1">
           {NAV_LINKS.map((l) => (
             <a key={l.href} href={l.href} onClick={() => setOpen(false)}
-              className="px-3 py-2 rounded text-sm font-['DM_Sans'] font-medium text-muted-foreground hover:text-[#00c8f8] transition-colors">
+              className="px-3 py-2 rounded text-sm font-['DM_Sans'] font-medium text-muted-foreground hover:text-[#f5c518] transition-colors">
               {l.label}
             </a>
           ))}
           <div className="pt-2 mt-1 border-t border-border">
             <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 w-full bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-4 py-2.5 rounded hover:bg-white transition-colors">
+              className="flex items-center gap-2 w-full bg-[#f5c518] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-4 py-2.5 rounded hover:bg-[#d9ab0a] transition-colors">
               <ExternalLink className="w-4 h-4" />
               Lihat CV / Portfolio Saya
             </a>
@@ -203,30 +261,38 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col justify-center pt-16 overflow-hidden">
+      {/* Grid lines */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: "linear-gradient(rgba(0,200,248,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,248,0.04) 1px, transparent 1px)",
+        backgroundImage: "linear-gradient(rgba(245,197,24,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,197,24,0.04) 1px, transparent 1px)",
         backgroundSize: "48px 48px",
       }} />
+      {/* Gold glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(0,200,248,0.08) 0%, transparent 70%)" }} />
+        style={{ background: "radial-gradient(ellipse, rgba(245,197,24,0.07) 0%, transparent 70%)" }} />
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-20 grid md:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-12 sm:py-20 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 border border-[#00c8f8]/30 rounded-full px-4 py-1.5 mb-8">
-            <span className="w-2 h-2 rounded-full bg-[#00c8f8] animate-pulse" />
-            <span className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-wider">TUGAS AKHIR — 2026</span>
+          {/* Campus identity block */}
+          <div className="flex items-center gap-4 border border-[#f5c518]/25 rounded-xl bg-[#f5c518]/5 px-4 py-3 mb-7 w-fit">
+            <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-12 h-12 object-contain shrink-0" />
+            <div>
+              <div className="font-['Exo_2'] font-bold text-sm text-[#f5c518] leading-snug">Politeknik Negeri Madura</div>
+              <div className="font-['DM_Sans'] text-xs text-muted-foreground">Program Studi D3 Teknik Listrik Industri</div>
+              <div className="font-['JetBrains_Mono'] text-[10px] text-muted-foreground/60 mt-0.5">Tugas Akhir · 2026</div>
+            </div>
           </div>
 
-          <h1 className="font-['Exo_2'] font-black text-4xl sm:text-5xl lg:text-6xl leading-none tracking-tight text-white mb-2">
-            TA <span className="text-[#00c8f8]">Raflie</span><br />
-            <span className="text-2xl sm:text-3xl lg:text-4xl text-muted-foreground font-semibold">Nurivansyah</span>
+          <h1 className="font-['Exo_2'] font-black text-4xl sm:text-5xl lg:text-6xl leading-none tracking-tight text-foreground mb-3">
+            <span className="text-[#f5c518]">AUTO</span>PONG
           </h1>
 
-          <div className="font-['JetBrains_Mono'] text-sm text-[#00c8f8]/70 mb-2 tracking-wider">— AUTOPONG</div>
+          <div className="font-['DM_Sans'] text-base text-muted-foreground mb-1">
+            <span className="text-foreground font-semibold">Raflie Nurivansyah</span>
+          </div>
 
-          <p className="font-['DM_Sans'] text-lg text-muted-foreground mb-2 leading-relaxed">
+          <p className="font-['DM_Sans'] text-base text-muted-foreground mb-2 leading-relaxed">
             Sistem Peluncur Bola Ping-Pong Otomatis Berbasis{" "}
-            <span className="text-[#00c8f8] font-medium">ESP32</span>
+            <span className="text-[#f5c518] font-medium">ESP32</span>
           </p>
           <p className="font-['DM_Sans'] text-sm text-muted-foreground/70 mb-10 leading-relaxed max-w-md">
             Perancangan dan implementasi mesin peluncur bola tenis meja otomatis dengan kontrol kecepatan, frekuensi, dan arah menggunakan mikrokontroler ESP32, motor DC, dan sistem relay.
@@ -234,15 +300,15 @@ function Hero() {
 
           <div className="flex flex-wrap gap-3">
             <a href="#overview"
-              className="inline-flex items-center gap-2 bg-[#00c8f8] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-6 py-3 rounded hover:bg-white transition-colors">
+              className="inline-flex items-center gap-2 bg-[#f5c518] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-6 py-3 rounded hover:bg-[#d9ab0a] transition-colors">
               Lihat Project <ChevronDown className="w-4 h-4" />
             </a>
             <a href="#resources"
-              className="inline-flex items-center gap-2 border border-border text-foreground font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:border-[#00c8f8]/50 hover:text-[#00c8f8] transition-colors">
+              className="inline-flex items-center gap-2 border border-border text-foreground font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:border-[#f5c518]/50 hover:text-[#f5c518] transition-colors">
               Resources <ExternalLink className="w-4 h-4" />
             </a>
             <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-[#00c8f8]/40 text-[#00c8f8] font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:bg-[#00c8f8]/10 transition-colors">
+              className="inline-flex items-center gap-2 border border-[#f5c518]/40 text-[#f5c518] font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:bg-[#f5c518]/10 transition-colors">
               CV / Portfolio <ExternalLink className="w-4 h-4" />
             </a>
           </div>
@@ -256,8 +322,8 @@ function Hero() {
             { val: "DC",    label: "Motor Driver",   sub: "L298N H-Bridge" },
           ].map((s) => (
             <div key={s.label}
-              className="border border-border rounded-lg p-5 bg-card hover:border-[#00c8f8]/30 transition-colors group">
-              <div className="font-['Exo_2'] font-black text-2xl text-[#00c8f8] group-hover:text-white transition-colors mb-1">{s.val}</div>
+              className="border border-border rounded-lg p-5 bg-card hover:border-[#f5c518]/30 transition-colors group">
+              <div className="font-['Exo_2'] font-black text-2xl text-[#f5c518] group-hover:text-foreground transition-colors mb-1">{s.val}</div>
               <div className="font-['DM_Sans'] font-semibold text-sm text-foreground mb-0.5">{s.label}</div>
               <div className="font-['JetBrains_Mono'] text-xs text-muted-foreground">{s.sub}</div>
             </div>
@@ -277,29 +343,29 @@ function Hero() {
 
 function Overview() {
   return (
-    <section id="overview" className="py-24 bg-card/30">
+    <section id="overview" className="py-16 sm:py-24 bg-card/30">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
-        <div className="grid md:grid-cols-2 gap-16 items-start">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-start">
           <div>
-            <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Overview</div>
-            <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-6 leading-tight">
-              Apa itu <span className="text-[#00c8f8]">Autopong?</span>
+            <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Overview</div>
+            <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-6 leading-tight">
+              Apa itu <span className="text-[#f5c518]">Autopong?</span>
             </h2>
             <div className="space-y-4 font-['DM_Sans'] text-base text-muted-foreground leading-relaxed">
               <p>
                 <strong className="text-foreground">Autopong</strong> adalah mesin peluncur bola tenis meja (ping-pong) otomatis yang dirancang untuk latihan mandiri. Sistem ini mampu melontarkan bola secara konsisten dengan kecepatan dan frekuensi yang dapat dikontrol secara digital.
               </p>
               <p>
-                Dikembangkan sebagai proyek Tugas Akhir, Autopong mengintegrasikan mikrokontroler <span className="text-[#00c8f8]">ESP32</span> sebagai unit pemrosesan utama, dua motor DC berkecepatan tinggi untuk mekanisme peluncuran, dan sistem relay untuk kontrol daya.
+                Dikembangkan sebagai proyek Tugas Akhir, Autopong mengintegrasikan mikrokontroler <span className="text-[#f5c518]">ESP32</span> sebagai unit pemrosesan utama, dua motor DC berkecepatan tinggi untuk mekanisme peluncuran, dan sistem relay untuk kontrol daya.
               </p>
               <p>
-                Kontrol kecepatan motor menggunakan teknik <span className="text-[#00c8f8]">PWM (Pulse Width Modulation)</span> yang memungkinkan pengguna menyesuaikan kecepatan lontaran bola secara halus dan presisi.
+                Kontrol kecepatan motor menggunakan teknik <span className="text-[#f5c518]">PWM (Pulse Width Modulation)</span> yang memungkinkan pengguna menyesuaikan kecepatan lontaran bola secara halus dan presisi.
               </p>
             </div>
           </div>
 
           <div>
-            <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Spesifikasi Singkat</div>
+            <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Spesifikasi Singkat</div>
             {[
               { k: "Mikrokontroler",    v: "ESP32 (240 MHz, dual-core, Wi-Fi)" },
               { k: "Motor Peluncur",    v: "DC Motor high-RPM × 2 (sistem roda gesekan)" },
@@ -311,7 +377,7 @@ function Overview() {
               { k: "Platform Kode",     v: "Arduino IDE / ESP-IDF" },
             ].map(({ k, v }) => (
               <div key={k} className="flex items-start justify-between gap-4 py-3 border-b border-border">
-                <span className="font-['JetBrains_Mono'] text-xs text-muted-foreground w-36 shrink-0">{k}</span>
+                <span className="font-['JetBrains_Mono'] text-xs text-muted-foreground w-28 sm:w-36 shrink-0">{k}</span>
                 <span className="font-['DM_Sans'] text-sm text-foreground text-right">{v}</span>
               </div>
             ))}
@@ -326,11 +392,11 @@ function Overview() {
 
 function Components() {
   return (
-    <section id="components" className="py-24">
+    <section id="components" className="py-16 sm:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         <div className="mb-14">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Komponen Sistem</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">Hardware yang Digunakan</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Komponen Sistem</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Hardware yang Digunakan</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
             Autopong dibangun dari komponen-komponen elektronik yang terpilih secara cermat untuk keandalan dan kontrol presisi.
           </p>
@@ -339,12 +405,12 @@ function Components() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {COMPONENT_DATA.map((c) => (
             <div key={c.name}
-              className="border border-border rounded-xl p-6 bg-card hover:border-[#00c8f8]/30 transition-all hover:-translate-y-0.5 group">
+              className="border border-border rounded-xl p-6 bg-card hover:border-[#f5c518]/30 transition-all hover:-translate-y-0.5 group">
               <div className="mb-4 group-hover:scale-110 transition-transform inline-block" style={{ color: c.color }}>
                 <Icon name={c.iconName} className="w-6 h-6" />
               </div>
-              <h3 className="font-['Exo_2'] font-bold text-lg text-white mb-1">{c.name}</h3>
-              <div className="font-['DM_Sans'] text-xs text-[#00c8f8] font-medium mb-3">{c.role}</div>
+              <h3 className="font-['Exo_2'] font-bold text-lg text-foreground mb-1">{c.name}</h3>
+              <div className="font-['DM_Sans'] text-xs text-[#f5c518] font-medium mb-3">{c.role}</div>
               <p className="font-['JetBrains_Mono'] text-xs text-muted-foreground leading-relaxed">{c.spec}</p>
             </div>
           ))}
@@ -358,11 +424,11 @@ function Components() {
 
 function Timeline() {
   return (
-    <section id="timeline" className="py-24 bg-card/30">
+    <section id="timeline" className="py-16 sm:py-24 bg-card/30">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         <div className="mb-14">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Development Journey</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">Perjalanan Pengerjaan</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Development Journey</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Perjalanan Pengerjaan</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">Dari desain awal hingga sistem final yang siap dipresentasikan.</p>
         </div>
 
@@ -372,16 +438,16 @@ function Timeline() {
             {TIMELINE.map((t, i) => (
               <div key={t.date}
                 className={`relative flex flex-col sm:flex-row ${i % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"} gap-6 sm:gap-10`}>
-                <div className="absolute left-0 sm:left-1/2 top-2 sm:-translate-x-1/2 w-6 h-6 rounded-full border-2 border-[#00c8f8] bg-background flex items-center justify-center shrink-0 z-10">
-                  <div className="w-2 h-2 rounded-full bg-[#00c8f8]" />
+                <div className="absolute left-0 sm:left-1/2 top-2 sm:-translate-x-1/2 w-6 h-6 rounded-full border-2 border-[#f5c518] bg-background flex items-center justify-center shrink-0 z-10">
+                  <div className="w-2 h-2 rounded-full bg-[#f5c518]" />
                 </div>
                 <div className={`ml-10 sm:ml-0 sm:w-1/2 ${i % 2 === 0 ? "sm:pr-10 sm:text-right" : "sm:pl-10"}`}>
-                  <div className="border border-border rounded-xl p-5 bg-card hover:border-[#00c8f8]/30 transition-colors">
+                  <div className="border border-border rounded-xl p-5 bg-card hover:border-[#f5c518]/30 transition-colors">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] border border-[#00c8f8]/30 px-2 py-0.5 rounded">{t.label}</span>
+                      <span className="font-['JetBrains_Mono'] text-xs text-[#f5c518] border border-[#f5c518]/30 px-2 py-0.5 rounded">{t.label}</span>
                       <span className="font-['JetBrains_Mono'] text-xs text-muted-foreground">{t.date}</span>
                     </div>
-                    <h3 className="font-['Exo_2'] font-bold text-base text-white mb-2">{t.title}</h3>
+                    <h3 className="font-['Exo_2'] font-bold text-base text-foreground mb-2">{t.title}</h3>
                     <p className="font-['DM_Sans'] text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
                   </div>
                 </div>
@@ -403,7 +469,7 @@ function StatCard({ label, value, color, iconName }: { label: string; value: str
       <div className="flex justify-center mb-1" style={{ color }}>
         <Icon name={iconName} className="w-4 h-4" />
       </div>
-      <div className="font-['Exo_2'] font-bold text-lg sm:text-2xl text-white">{value}</div>
+      <div className="font-['Exo_2'] font-bold text-lg sm:text-2xl text-foreground">{value}</div>
       <div className="font-['JetBrains_Mono'] text-[10px] sm:text-xs text-muted-foreground mt-0.5">{label}</div>
     </div>
   );
@@ -417,9 +483,9 @@ function SummaryStats({ tab }: { tab: TabId }) {
     const max = Math.max(...allVals).toFixed(2);
     return (
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <StatCard label="Avg Response" value={`${avg}s`} color="#00c8f8" iconName="activity" />
+        <StatCard label="Avg Response" value={`${avg}s`} color="#f5c518" iconName="activity" />
         <StatCard label="Min Response" value={`${min}s`} color="#4ade80" iconName="activity" />
-        <StatCard label="Max Response" value={`${max}s`} color="#ff6b35" iconName="activity" />
+        <StatCard label="Max Response" value={`${max}s`} color="#e8605a" iconName="activity" />
       </div>
     );
   }
@@ -429,9 +495,9 @@ function SummaryStats({ tab }: { tab: TabId }) {
     const acc   = ((exec / total) * 100).toFixed(1);
     return (
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <StatCard label="Total Gift Masuk" value={total}     color="#00c8f8" iconName="database" />
+        <StatCard label="Total Gift Masuk" value={total}     color="#f5c518" iconName="database" />
         <StatCard label="Dieksekusi"        value={exec}      color="#4ade80" iconName="activity" />
-        <StatCard label="Akurasi"           value={`${acc}%`} color="#ff6b35" iconName="activity" />
+        <StatCard label="Akurasi"           value={`${acc}%`} color="#e8605a" iconName="activity" />
       </div>
     );
   }
@@ -440,9 +506,9 @@ function SummaryStats({ tab }: { tab: TabId }) {
   const acc   = ((exec / total) * 100).toFixed(1);
   return (
     <div className="grid grid-cols-3 gap-3 mb-6">
-      <StatCard label="Total Like"  value={total}     color="#00c8f8" iconName="activity" />
+      <StatCard label="Total Like"  value={total}     color="#f5c518" iconName="activity" />
       <StatCard label="Dieksekusi"  value={exec}      color="#4ade80" iconName="activity" />
-      <StatCard label="Akurasi"     value={`${acc}%`} color="#ff6b35" iconName="activity" />
+      <StatCard label="Akurasi"     value={`${acc}%`} color="#e8605a" iconName="activity" />
     </div>
   );
 }
@@ -497,8 +563,8 @@ function RawTable({ tab }: { tab: TabId }) {
                 <td className="px-4 py-2.5 text-foreground">{row.name}</td>
                 <td className="text-right px-4 py-2.5 text-foreground">{row["Data Masuk"]}</td>
                 <td className="text-right px-4 py-2.5 text-[#4ade80]">{row.Dieksekusi}</td>
-                <td className="text-right px-4 py-2.5" style={{ color: row["Data Loss"] > 0 ? "#ff6b35" : "#4ade80" }}>{row["Data Loss"]}</td>
-                <td className="text-right px-4 py-2.5 text-[#00c8f8]">{((row.Dieksekusi / row["Data Masuk"]) * 100).toFixed(0)}%</td>
+                <td className="text-right px-4 py-2.5" style={{ color: row["Data Loss"] > 0 ? "#e8605a" : "#4ade80" }}>{row["Data Loss"]}</td>
+                <td className="text-right px-4 py-2.5 text-[#f5c518]">{((row.Dieksekusi / row["Data Masuk"]) * 100).toFixed(0)}%</td>
               </tr>
             ))}
           </tbody>
@@ -524,8 +590,8 @@ function RawTable({ tab }: { tab: TabId }) {
               <td className="px-4 py-2.5 text-foreground">{row.name}</td>
               <td className="text-right px-4 py-2.5 text-foreground">{row["Jumlah Like"]}</td>
               <td className="text-right px-4 py-2.5 text-[#4ade80]">{row.Dieksekusi}</td>
-              <td className="text-right px-4 py-2.5" style={{ color: "#ff6b35" }}>{row["Data Loss"]}</td>
-              <td className="text-right px-4 py-2.5 text-[#00c8f8]">{((row.Dieksekusi / row["Jumlah Like"]) * 100).toFixed(1)}%</td>
+              <td className="text-right px-4 py-2.5" style={{ color: "#e8605a" }}>{row["Data Loss"]}</td>
+              <td className="text-right px-4 py-2.5 text-[#f5c518]">{((row.Dieksekusi / row["Jumlah Like"]) * 100).toFixed(1)}%</td>
             </tr>
           ))}
         </tbody>
@@ -545,7 +611,7 @@ function CssBarChart({ data, keys, colors }: {
   const maxVal = Math.max(...allVals, 1);
   return (
     <div className="w-full">
-      <div className="flex items-end justify-around gap-3 px-2 border-b border-[rgba(0,200,248,0.1)]" style={{ height: "200px" }}>
+      <div className="flex items-end justify-around gap-3 px-2 border-b border-[rgba(245,197,24,0.1)]" style={{ height: "200px" }}>
         {data.map((row) => (
           <div key={row.name as string} className="flex flex-col items-center gap-1 flex-1 min-w-0">
             <div className="flex items-end gap-1 w-full justify-center" style={{ height: "164px" }}>
@@ -580,8 +646,8 @@ function CssBarChart({ data, keys, colors }: {
 
 const MQTT_FLOW = [
   { id: "tiktok",  label: "TikTok Live",         sub: "@username",                          iconName: "wifi",   color: "#ff2d55" },
-  { id: "server",  label: "Backend Server",       sub: "siabel.poltera.ac.id/iot",           iconName: "server", color: "#ff6b35" },
-  { id: "broker",  label: "MQTT Broker",          sub: "mqtt.icminovasi.my.id:8883",         iconName: "radio",  color: "#00c8f8" },
+  { id: "server",  label: "Backend Server",       sub: "siabel.poltera.ac.id/iot",           iconName: "server", color: "#e8605a" },
+  { id: "broker",  label: "MQTT Broker",          sub: "mqtt.icminovasi.my.id:8883",         iconName: "radio",  color: "#f5c518" },
   { id: "esp32",   label: "ESP32",                sub: "Client ID: pong-45c4",               iconName: "cpu",    color: "#a3b8d8" },
   { id: "motor",   label: "Launcher Motor",       sub: "L298N + PWM 5kHz 12-bit",           iconName: "zap",    color: "#4ade80" },
 ];
@@ -599,8 +665,8 @@ const MQTT_SPECS = [
 
 const EVENT_TYPES = [
   { type: "like",   color: "#ff2d55", desc: "like → 1 bola per like, speed normal" },
-  { type: "gift",   color: "#ff6b35", desc: "gift → tier system (1–6 bola, bounce mode)" },
-  { type: "chat",   color: "#00c8f8", desc: "chat → log only, tidak trigger motor" },
+  { type: "gift",   color: "#e8605a", desc: "gift → tier system (1–6 bola, bounce mode)" },
+  { type: "chat",   color: "#f5c518", desc: "chat → log only, tidak trigger motor" },
   { type: "follow", color: "#a3b8d8", desc: "follow → log only" },
   { type: "share",  color: "#4ade80", desc: "share → log only" },
 ];
@@ -654,15 +720,15 @@ function MqttSection() {
   const snippet = JSON_SNIPPETS[activeEvent] ?? [];
 
   return (
-    <section id="mqtt" className="py-24 bg-card/30">
+    <section id="mqtt" className="py-16 sm:py-24 bg-card/30">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
 
         {/* Header */}
         <div className="mb-12">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Arsitektur Sistem</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">Alur Data MQTT</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Arsitektur Sistem</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Alur Data MQTT</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
-            Autopong menggunakan protokol <span className="text-[#00c8f8] font-medium">MQTT over TLS (port 8883)</span> untuk
+            Autopong menggunakan protokol <span className="text-[#f5c518] font-medium">MQTT over TLS (port 8883)</span> untuk
             menerima event TikTok Live secara real-time dan mengeksekusinya langsung ke aktuator fisik.
           </p>
         </div>
@@ -675,7 +741,7 @@ function MqttSection() {
             {MQTT_FLOW.map((node, i) => (
               <div key={node.id} className="flex items-center flex-1 min-w-0">
                 {/* Node card */}
-                <div className="flex-1 min-w-0 border border-border rounded-xl bg-card hover:border-[#00c8f8]/40 transition-colors p-4 flex flex-col items-center gap-2 text-center">
+                <div className="flex-1 min-w-0 border border-border rounded-xl bg-card hover:border-[#f5c518]/40 transition-colors p-4 flex flex-col items-center gap-2 text-center">
                   {/* Step badge */}
                   <div className="font-['JetBrains_Mono'] text-[9px] text-muted-foreground mb-1">STEP {i + 1}</div>
                   {/* Icon circle */}
@@ -683,7 +749,7 @@ function MqttSection() {
                     style={{ background: `${node.color}1a`, border: `1px solid ${node.color}30` }}>
                     <FlowIcon name={node.iconName} color={node.color} />
                   </div>
-                  <div className="font-['Exo_2'] font-bold text-sm text-white leading-tight">{node.label}</div>
+                  <div className="font-['Exo_2'] font-bold text-sm text-foreground leading-tight">{node.label}</div>
                   <div className="font-['JetBrains_Mono'] text-[8px] text-muted-foreground leading-tight break-all px-1">{node.sub}</div>
                   {/* Protocol badge */}
                   <div className="font-['JetBrains_Mono'] text-[8px] px-2 py-0.5 rounded-full mt-1 shrink-0"
@@ -694,9 +760,9 @@ function MqttSection() {
                 {/* Arrow connector */}
                 {i < MQTT_FLOW.length - 1 && (
                   <div className="flex flex-col items-center px-1 shrink-0">
-                    <div className="h-px w-6 bg-gradient-to-r from-border to-[#00c8f8]/30" />
-                    <ArrowRight className="w-4 h-4 text-[#00c8f8]/50 -ml-1" />
-                    <div className="h-px w-6 bg-gradient-to-r from-[#00c8f8]/30 to-border" />
+                    <div className="h-px w-6 bg-gradient-to-r from-border to-[#f5c518]/30" />
+                    <ArrowRight className="w-4 h-4 text-[#f5c518]/50 -ml-1" />
+                    <div className="h-px w-6 bg-gradient-to-r from-[#f5c518]/30 to-border" />
                   </div>
                 )}
               </div>
@@ -719,7 +785,7 @@ function MqttSection() {
                   </div>
                   {/* Right: text */}
                   <div className="flex-1 min-w-0">
-                    <div className="font-['Exo_2'] font-bold text-sm text-white">{node.label}</div>
+                    <div className="font-['Exo_2'] font-bold text-sm text-foreground">{node.label}</div>
                     <div className="font-['JetBrains_Mono'] text-[9px] text-muted-foreground break-all leading-relaxed mt-0.5">{node.sub}</div>
                     <div className="font-['JetBrains_Mono'] text-[8px] px-2 py-0.5 rounded-full mt-2 inline-block"
                       style={{ background: `${node.color}1a`, color: node.color }}>
@@ -733,7 +799,7 @@ function MqttSection() {
                     <div className="flex flex-col items-center gap-0">
                       <div className="w-px h-3 bg-border" />
                       <div className="w-0 h-0"
-                        style={{ borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "6px solid rgba(0,200,248,0.35)" }} />
+                        style={{ borderLeft: "5px solid transparent", borderRight: "5px solid transparent", borderTop: "6px solid rgba(245,197,24,0.35)" }} />
                     </div>
                   </div>
                 )}
@@ -747,12 +813,12 @@ function MqttSection() {
 
           {/* MQTT Specs table */}
           <div>
-            <h3 className="font-['Exo_2'] font-bold text-lg text-white mb-4">Konfigurasi MQTT</h3>
+            <h3 className="font-['Exo_2'] font-bold text-lg text-foreground mb-4">Konfigurasi MQTT</h3>
             <div className="border border-border rounded-xl overflow-hidden bg-card divide-y divide-border/50">
               {MQTT_SPECS.map(({ k, v }) => (
-                <div key={k} className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors">
+                <div key={k} className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-[#d9ab0a]/[0.02] transition-colors">
                   <span className="font-['JetBrains_Mono'] text-xs text-muted-foreground shrink-0 w-20">{k}</span>
-                  <span className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] text-right break-all leading-relaxed">{v}</span>
+                  <span className="font-['JetBrains_Mono'] text-xs text-[#f5c518] text-right break-all leading-relaxed">{v}</span>
                 </div>
               ))}
             </div>
@@ -760,7 +826,7 @@ function MqttSection() {
 
           {/* Event JSON Explorer */}
           <div>
-            <h3 className="font-['Exo_2'] font-bold text-lg text-white mb-4">Payload JSON — Tipe Event</h3>
+            <h3 className="font-['Exo_2'] font-bold text-lg text-foreground mb-4">Payload JSON — Tipe Event</h3>
             {/* Tab pills */}
             <div className="flex flex-wrap gap-2 mb-4">
               {EVENT_TYPES.map((e) => (
@@ -768,7 +834,7 @@ function MqttSection() {
                   className={`font-['JetBrains_Mono'] text-xs px-3 py-1.5 rounded-full border transition-all duration-150 ${
                     activeEvent === e.type
                       ? "border-transparent text-[#060d1a]"
-                      : "border-border text-muted-foreground hover:border-[#00c8f8]/40 hover:text-foreground"
+                      : "border-border text-muted-foreground hover:border-[#f5c518]/40 hover:text-foreground"
                   }`}
                   style={activeEvent === e.type ? { background: e.color } : {}}>
                   {e.type}
@@ -782,18 +848,18 @@ function MqttSection() {
               <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50"
                 style={{ background: `${ev.color}0d` }}>
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ev.color }} />
-                <span className="font-['Exo_2'] font-bold text-sm text-white">type: "{ev.type}"</span>
+                <span className="font-['Exo_2'] font-bold text-sm text-foreground">type: "{ev.type}"</span>
                 <span className="ml-auto font-['DM_Sans'] text-xs text-muted-foreground">{ev.desc}</span>
               </div>
               {/* Syntax-highlighted JSON */}
               <div className="p-4 font-['JetBrains_Mono'] text-xs leading-6"
-                style={{ background: "rgba(0,0,0,0.25)" }}>
+                style={{ background: "#0a1628" }}>
                 <span style={{ color: "#5a7a9a" }}>{"{"}</span><br />
                 {snippet.map(({ key, val, type }) => (
                   <div key={key} className="pl-4">
-                    <span style={{ color: "#00c8f8" }}>"{key}"</span>
+                    <span style={{ color: "#f5c518" }}>"{key}"</span>
                     <span style={{ color: "#5a7a9a" }}>: </span>
-                    <span style={{ color: type === "str" ? "#4ade80" : type === "num" ? "#ff6b35" : "#a78bfa" }}>{val}</span>
+                    <span style={{ color: type === "str" ? "#4ade80" : type === "num" ? "#e8605a" : "#a78bfa" }}>{val}</span>
                     <span style={{ color: "#5a7a9a" }}>,</span>
                   </div>
                 ))}
@@ -839,8 +905,8 @@ const GIFT_TIERS = [
     coins: "≥ 5 koin",
     balls: 3,
     mode: "Bounce",
-    color: "#00c8f8",
-    glow: "rgba(0,200,248,0.15)",
+    color: "#f5c518",
+    glow: "rgba(245,197,24,0.15)",
     motorA: "Normal (180/255)",
     motorB: "Max (255/255)",
     bounce: true,
@@ -853,7 +919,7 @@ const GIFT_TIERS = [
     coins: "≥ 10 koin",
     balls: 6,
     mode: "Bounce",
-    color: "#ff6b35",
+    color: "#e8605a",
     glow: "rgba(255,107,53,0.15)",
     motorA: "Normal (180/255)",
     motorB: "Max (255/255)",
@@ -883,11 +949,11 @@ function GiftTierSection() {
   const t = GIFT_TIERS[active];
 
   return (
-    <section id="gifttier" className="py-24">
+    <section id="gifttier" className="py-16 sm:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         <div className="mb-14">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Sistem Gift</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">Gift Tier System</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Sistem Gift</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Gift Tier System</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
             Autopong membedakan respons fisik berdasarkan nilai gift TikTok. Semakin banyak koin, semakin spektakuler reaksi mesin peluncur.
           </p>
@@ -898,11 +964,11 @@ function GiftTierSection() {
           {GIFT_TIERS.map((tier, i) => (
             <button key={tier.tier} onClick={() => setActive(i)}
               className={`border rounded-xl p-4 text-left transition-all ${
-                active === i ? "border-transparent" : "border-border hover:border-[#00c8f8]/30 bg-card"
+                active === i ? "border-transparent" : "border-border hover:border-[#f5c518]/30 bg-card"
               }`}
               style={active === i ? { background: tier.glow, borderColor: tier.color } : {}}>
               <div className="font-['JetBrains_Mono'] text-xs mb-1" style={{ color: tier.color }}>{tier.tier}</div>
-              <div className="font-['Exo_2'] font-bold text-white text-sm mb-0.5">{tier.coins}</div>
+              <div className="font-['Exo_2'] font-bold text-foreground text-sm mb-0.5">{tier.coins}</div>
               <div className="flex items-center gap-1">
                 {Array.from({ length: tier.balls }).map((_, bi) => (
                   <span key={bi} className="inline-block w-1.5 h-1.5 rounded-full"
@@ -921,7 +987,7 @@ function GiftTierSection() {
               <div className="flex items-center gap-3 mb-4">
                 <span className="font-['JetBrains_Mono'] text-xs border px-3 py-1 rounded-full"
                   style={{ color: t.color, borderColor: t.color + "50" }}>{t.tier}</span>
-                <span className="font-['Exo_2'] font-bold text-2xl text-white">{t.coins}</span>
+                <span className="font-['Exo_2'] font-bold text-2xl text-foreground">{t.coins}</span>
               </div>
               <p className="font-['DM_Sans'] text-muted-foreground mb-6">{t.desc}</p>
 
@@ -941,7 +1007,7 @@ function GiftTierSection() {
 
             {/* PWM bars */}
             <div>
-              <h4 className="font-['Exo_2'] font-bold text-sm text-white mb-4">Kecepatan Motor (PWM 12-bit)</h4>
+              <h4 className="font-['Exo_2'] font-bold text-sm text-foreground mb-4">Kecepatan Motor (PWM 12-bit)</h4>
               {[
                 { label: "Motor A (Atas) — GPIO 25", val: t.pwmA, max: 4095, sub: t.motorA },
                 { label: "Motor B (Bawah) — GPIO 14", val: t.pwmB, max: 4095, sub: t.motorB },
@@ -960,7 +1026,7 @@ function GiftTierSection() {
               ))}
               <div className="border border-border/50 rounded-lg p-3 bg-card/50 mt-4">
                 <div className="font-['JetBrains_Mono'] text-[10px] text-muted-foreground mb-1">Durasi Feeder (Relay)</div>
-                <div className="font-['Exo_2'] font-bold text-white">{t.balls} × 800ms = <span style={{ color: t.color }}>{t.balls * 800}ms</span></div>
+                <div className="font-['Exo_2'] font-bold text-foreground">{t.balls} × 800ms = <span style={{ color: t.color }}>{t.balls * 800}ms</span></div>
               </div>
             </div>
           </div>
@@ -1017,7 +1083,7 @@ function SvgLineChart() {
       {LC_YTICKS.map((t) => (
         <g key={t}>
           <line x1={LC_PL} x2={LC_VW - LC_PR} y1={lcY(t)} y2={lcY(t)}
-            stroke="rgba(0,200,248,0.07)" strokeDasharray="4 3" />
+            stroke="rgba(245,197,24,0.07)" strokeDasharray="4 3" />
           <text x={LC_PL - 5} y={lcY(t) + 4} textAnchor="end" fontSize={9} fill="#5a7a9a">{t}s</text>
         </g>
       ))}
@@ -1031,7 +1097,7 @@ function SvgLineChart() {
       {/* vertical crosshair lines (faint) */}
       {responseTimeData.map((_, i) => (
         <line key={i} x1={lcX(i)} x2={lcX(i)} y1={LC_PT} y2={LC_PT + LC_IH}
-          stroke="rgba(0,200,248,0.04)" />
+          stroke="rgba(245,197,24,0.04)" />
       ))}
 
       {/* lines */}
@@ -1084,15 +1150,15 @@ function Testing() {
   const legend = activeTab === "response"
     ? LINE_COLORS.map((c, i) => ({ label: `Lap ${i + 1}`, color: c }))
     : activeTab === "gift"
-      ? [{ label: "Data Masuk", color: "#00c8f8" }, { label: "Dieksekusi", color: "#4ade80" }, { label: "Data Loss", color: "#ff6b35" }]
-      : [{ label: "Jumlah Like", color: "#00c8f8" }, { label: "Dieksekusi", color: "#4ade80" }, { label: "Data Loss", color: "#ff6b35" }];
+      ? [{ label: "Data Masuk", color: "#f5c518" }, { label: "Dieksekusi", color: "#4ade80" }, { label: "Data Loss", color: "#e8605a" }]
+      : [{ label: "Jumlah Like", color: "#f5c518" }, { label: "Dieksekusi", color: "#4ade80" }, { label: "Data Loss", color: "#e8605a" }];
 
   return (
-    <section id="testing" className="py-24">
+    <section id="testing" className="py-16 sm:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         <div className="mb-10">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Hasil Pengujian</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">Data Pengujian Sistem</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Hasil Pengujian</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Data Pengujian Sistem</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
             Analisis performa Autopong — response time, akurasi eksekusi gift, dan keandalan deteksi like dari TikTok Live.
           </p>
@@ -1104,8 +1170,8 @@ function Testing() {
               onClick={() => { setActiveTab(id); setShowTable(false); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-['DM_Sans'] font-medium transition-all border ${
                 activeTab === id
-                  ? "bg-[#00c8f8] text-[#060d1a] border-[#00c8f8]"
-                  : "border-border text-muted-foreground hover:text-foreground hover:border-[#00c8f8]/30"
+                  ? "bg-[#f5c518] text-[#060d1a] border-[#f5c518]"
+                  : "border-border text-muted-foreground hover:text-foreground hover:border-[#f5c518]/30"
               }`}>
               {id === "response" ? <TrendingUp className="w-4 h-4" /> : <BarChart2 className="w-4 h-4" />}
               {label}
@@ -1123,14 +1189,14 @@ function Testing() {
               <CssBarChart
                 data={giftData}
                 keys={["Data Masuk", "Dieksekusi", "Data Loss"]}
-                colors={["#00c8f8", "#4ade80", "#ff6b35"]}
+                colors={["#f5c518", "#4ade80", "#e8605a"]}
               />
             )}
             {activeTab === "like" && (
               <CssBarChart
                 data={likeData}
                 keys={["Jumlah Like", "Dieksekusi", "Data Loss"]}
-                colors={["#00c8f8", "#4ade80", "#ff6b35"]}
+                colors={["#f5c518", "#4ade80", "#e8605a"]}
               />
             )}
           </div>
@@ -1149,7 +1215,7 @@ function Testing() {
               {showTable ? "Sembunyikan" : "Tampilkan"} data tabel
             </span>
             <button onClick={() => setShowTable(!showTable)}
-              className="font-['DM_Sans'] text-xs text-[#00c8f8] border border-[#00c8f8]/30 px-3 py-1.5 rounded hover:bg-[#00c8f8]/10 transition-colors">
+              className="font-['DM_Sans'] text-xs text-[#f5c518] border border-[#f5c518]/30 px-3 py-1.5 rounded hover:bg-[#f5c518]/10 transition-colors">
               {showTable ? "↑ Sembunyikan" : "↓ Lihat Tabel"}
             </button>
           </div>
@@ -1181,11 +1247,11 @@ function Gallery() {
   }, [selected]);
 
   return (
-    <section id="gallery" className="py-24 bg-card/30">
+    <section id="gallery" className="py-16 sm:py-24 bg-card/30">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         <div className="mb-14">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Dokumentasi</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">Foto Proses Pengerjaan</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Dokumentasi</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Foto Proses Pengerjaan</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
             Dokumentasi real dari setiap tahap pembangunan sistem Autopong — dari wiring awal hingga unit final yang siap diuji.
           </p>
@@ -1194,11 +1260,11 @@ function Gallery() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {PHOTOS.map((p, i) => (
             <button key={i} onClick={() => setSelected(i)}
-              className="group relative rounded-xl overflow-hidden aspect-[4/3] bg-card border border-border hover:border-[#00c8f8]/50 transition-all text-left">
+              className="group relative rounded-xl overflow-hidden aspect-[4/3] bg-card border border-border hover:border-[#f5c518]/50 transition-all text-left">
               <ImageWithFallback src={p.src} alt={p.alt}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] mb-1">{p.date}</div>
+                <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] mb-1">{p.date}</div>
                 <p className="font-['DM_Sans'] text-xs text-white/90 line-clamp-2">{p.caption}</p>
               </div>
               <div className="absolute top-3 right-3 font-['JetBrains_Mono'] text-xs text-white/70 bg-black/50 px-2 py-0.5 rounded">
@@ -1217,14 +1283,14 @@ function Gallery() {
                 <X className="w-6 h-6" />
               </button>
               <div className="flex items-center gap-4">
-                <button onClick={prev} className="text-white/60 hover:text-[#00c8f8] transition-colors p-2 shrink-0">
+                <button onClick={prev} className="text-foreground/60 hover:text-[#f5c518] transition-colors p-2 shrink-0">
                   <ChevronLeft className="w-8 h-8" />
                 </button>
                 <div className="flex-1 rounded-xl overflow-hidden bg-card">
                   <ImageWithFallback src={PHOTOS[selected].src} alt={PHOTOS[selected].alt}
                     className="w-full max-h-[70vh] object-contain" />
                   <div className="p-5">
-                    <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] mb-2">
+                    <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] mb-2">
                       {PHOTOS[selected].date} — Foto {selected + 1}/{PHOTOS.length}
                     </div>
                     <p className="font-['DM_Sans'] text-sm text-muted-foreground leading-relaxed">
@@ -1232,14 +1298,14 @@ function Gallery() {
                     </p>
                   </div>
                 </div>
-                <button onClick={next} className="text-white/60 hover:text-[#00c8f8] transition-colors p-2 shrink-0">
+                <button onClick={next} className="text-foreground/60 hover:text-[#f5c518] transition-colors p-2 shrink-0">
                   <ChevronRight className="w-8 h-8" />
                 </button>
               </div>
               <div className="flex justify-center gap-2 mt-4">
                 {PHOTOS.map((_, i) => (
                   <button key={i} onClick={() => setSelected(i)}
-                    className={`w-2 h-2 rounded-full transition-colors ${i === selected ? "bg-[#00c8f8]" : "bg-white/20 hover:bg-white/40"}`} />
+                    className={`w-2 h-2 rounded-full transition-colors ${i === selected ? "bg-[#f5c518]" : "bg-white/20 hover:bg-[#d9ab0a]/40"}`} />
                 ))}
               </div>
             </div>
@@ -1254,11 +1320,11 @@ function Gallery() {
 
 function Resources() {
   return (
-    <section id="resources" className="py-24">
+    <section id="resources" className="py-16 sm:py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         <div className="mb-14">
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8] tracking-widest mb-4 uppercase">— Resources</div>
-          <h2 className="font-['Exo_2'] font-bold text-4xl text-white mb-3">File & Dokumentasi</h2>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Resources</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">File & Dokumentasi</h2>
           <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
             Akses semua file terkait project Autopong — dokumentasi, data, source code, dan laporan Tugas Akhir.
           </p>
@@ -1267,18 +1333,18 @@ function Resources() {
         <div className="grid sm:grid-cols-2 gap-5">
           {RESOURCE_DATA.map((r) => (
             <a key={r.title} href={r.link} target="_blank" rel="noopener noreferrer"
-              className="group border border-border rounded-xl p-6 bg-card hover:border-[#00c8f8]/40 transition-all hover:-translate-y-0.5 flex flex-col gap-4">
+              className="group border border-border rounded-xl p-6 bg-card hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col gap-4">
               <div className="flex items-start justify-between gap-4">
                 <div style={{ color: r.color }} className="group-hover:scale-110 transition-transform">
                   <Icon name={r.iconName} className="w-7 h-7" />
                 </div>
-                <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-[#00c8f8] transition-colors">
+                <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-[#f5c518] transition-colors">
                   <span className="font-['JetBrains_Mono'] text-xs">Google Drive</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </div>
               </div>
               <div>
-                <h3 className="font-['Exo_2'] font-bold text-lg text-white mb-2 group-hover:text-[#00c8f8] transition-colors">{r.title}</h3>
+                <h3 className="font-['Exo_2'] font-bold text-lg text-foreground mb-2 group-hover:text-[#f5c518] transition-colors">{r.title}</h3>
                 <p className="font-['DM_Sans'] text-sm text-muted-foreground leading-relaxed">{r.desc}</p>
               </div>
               <div className="mt-auto pt-3 border-t border-border">
@@ -1301,15 +1367,19 @@ function Footer() {
     <footer className="border-t border-border py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div>
-          <div className="font-['Exo_2'] font-black text-xl tracking-tight text-[#00c8f8] mb-0.5">
-            TA <span className="text-white">Raflie Nurivansyah</span>
+          <div className="flex items-center gap-3 mb-2">
+            <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-10 h-10 object-contain shrink-0" />
+            <div>
+              <div className="font-['Exo_2'] font-black text-base text-[#f5c518] leading-snug">TA Raflie Nurivansyah</div>
+              <div className="font-['JetBrains_Mono'] text-[10px] text-[#f5c518]/60">AUTOPONG</div>
+            </div>
           </div>
-          <p className="font-['JetBrains_Mono'] text-xs text-[#00c8f8]/60 mb-1">AUTOPONG</p>
-          <p className="font-['DM_Sans'] text-sm text-muted-foreground">Tugas Akhir — Sistem Peluncur Bola Ping-Pong Otomatis</p>
+          <p className="font-['DM_Sans'] text-xs text-muted-foreground">Politeknik Negeri Madura — D3 Teknik Listrik Industri</p>
+          <p className="font-['DM_Sans'] text-xs text-muted-foreground/60">Tugas Akhir 2026</p>
         </div>
         <div className="text-right">
           <div className="font-['JetBrains_Mono'] text-xs text-muted-foreground mb-1">© 2026 — All rights reserved</div>
-          <div className="font-['JetBrains_Mono'] text-xs text-[#00c8f8]/60">ESP32 · Arduino · Motor Control</div>
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518]/60">ESP32 · Arduino · Motor Control</div>
         </div>
       </div>
     </footer>
@@ -1319,18 +1389,26 @@ function Footer() {
 // ─── ROOT ────────────────────────────────────────────────────────────────────
 
 export default function App() {
+  const [theme, toggleTheme] = useTheme();
   return (
-    <div className="min-h-screen bg-background text-foreground" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-      <Navbar />
+    <div className="min-h-screen bg-background text-foreground relative" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Sitewide logo watermark — fixed background, isolated compositor layer */}
+      <div className="watermark-layer fixed inset-0 pointer-events-none select-none overflow-hidden z-0" aria-hidden="true">
+        {/* Single centered logo — colored watermark, responsive */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ opacity: 0.08 }}>
+          <ImageWithFallback src={logoTL} alt="" className="w-[300px] h-[300px] sm:w-[480px] sm:h-[480px] lg:w-[680px] lg:h-[680px] max-w-none object-contain" />
+        </div>
+      </div>
+      <Navbar theme={theme} onToggleTheme={toggleTheme} />
       <Hero />
-      <Overview />
-      <Components />
-      <Timeline />
-      <MqttSection />
-      <GiftTierSection />
-      <Testing />
-      <Gallery />
-      <Resources />
+      <Reveal><Overview /></Reveal>
+      <Reveal><Components /></Reveal>
+      <Reveal><Timeline /></Reveal>
+      <Reveal><MqttSection /></Reveal>
+      <Reveal><GiftTierSection /></Reveal>
+      <Reveal><Testing /></Reveal>
+      <Reveal><Gallery /></Reveal>
+      <Reveal><Resources /></Reveal>
       <Footer />
     </div>
   );

@@ -8,23 +8,23 @@
   --card-foreground: #e8f0ff;
   --popover: #0d1829;
   --popover-foreground: #e8f0ff;
-  --primary: #00c8f8;
-  --primary-foreground: #060d1a;
+  --primary: #f5c518;
+  --primary-foreground: #0a1628;
   --secondary: #111e35;
   --secondary-foreground: #a3b8d8;
   --muted: #0d1829;
-  --muted-foreground: #5a7a9a;
-  --accent: #ff6b35;
+  --muted-foreground: #7d94b4;
+  --accent: #e8605a;
   --accent-foreground: #ffffff;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 200, 248, 0.12);
+  --border: rgba(245, 197, 24, 0.14);
   --input: transparent;
   --input-background: #111e35;
   --switch-background: #1a2f50;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #00c8f8;
+  --ring: #f5c518;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -41,26 +41,26 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-  --background: #060d1a;
-  --foreground: #e8f0ff;
-  --card: #0d1829;
-  --card-foreground: #e8f0ff;
-  --popover: #0d1829;
-  --popover-foreground: #e8f0ff;
-  --primary: #00c8f8;
-  --primary-foreground: #060d1a;
-  --secondary: #111e35;
-  --secondary-foreground: #a3b8d8;
-  --muted: #0d1829;
-  --muted-foreground: #5a7a9a;
-  --accent: #ff6b35;
+.light {
+  --background: #d5deec;
+  --foreground: #0a1628;
+  --card: #ffffff;
+  --card-foreground: #0a1628;
+  --popover: #ffffff;
+  --popover-foreground: #0a1628;
+  --primary: #f5c518;
+  --primary-foreground: #0a1628;
+  --secondary: #e4eaf4;
+  --secondary-foreground: #33465f;
+  --muted: #e9eef6;
+  --muted-foreground: #5a6b85;
+  --accent: #e8605a;
   --accent-foreground: #ffffff;
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: rgba(0, 200, 248, 0.12);
-  --input: #111e35;
-  --ring: #00c8f8;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(10, 22, 40, 0.12);
+  --input: #eef2f9;
+  --ring: #f5c518;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --chart-1: oklch(0.488 0.243 264.376);
@@ -135,6 +135,17 @@
 
   html {
     font-size: var(--font-size);
+    scroll-behavior: smooth;
+  }
+
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  body {
+    transition: background-color 0.4s ease, color 0.4s ease;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1 {
@@ -177,5 +188,43 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+/* ── Scroll-reveal (lightweight; layer promoted only while animating) ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  will-change: auto;
+}
+
+/* Isolate the large fixed watermark onto its own compositor layer so
+   scrolling content doesn't force it to repaint. */
+.watermark-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
