@@ -429,7 +429,7 @@ function Components() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {COMPONENT_DATA.map((c) => (
             <div key={c.name}
-              className="border border-border rounded-xl p-6 bg-card hover:border-[#f5c518]/30 transition-all hover:-translate-y-0.5 group">
+              className="border border-border rounded-xl p-4 sm:p-6 bg-card hover:border-[#f5c518]/30 transition-all hover:-translate-y-0.5 group min-w-0 overflow-hidden">
               <div className="mb-4 group-hover:scale-110 transition-transform inline-block" style={{ color: c.color }}>
                 <Icon name={c.iconName} className="w-6 h-6" />
               </div>
@@ -466,7 +466,7 @@ function Timeline() {
                   <div className="w-2 h-2 rounded-full bg-[#f5c518]" />
                 </div>
                 <div className={`ml-10 sm:ml-0 sm:w-1/2 ${i % 2 === 0 ? "sm:pr-10 sm:text-right" : "sm:pl-10"}`}>
-                  <div className="border border-border rounded-xl p-5 bg-card hover:border-[#f5c518]/30 transition-colors">
+                  <div className="border border-border rounded-xl p-4 sm:p-5 bg-card hover:border-[#f5c518]/30 transition-colors min-w-0 overflow-hidden">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className="font-['JetBrains_Mono'] text-xs text-[#f5c518] border border-[#f5c518]/30 px-2 py-0.5 rounded">{t.label}</span>
                       <span className="font-['JetBrains_Mono'] text-xs text-muted-foreground">{t.date}</span>
@@ -1398,7 +1398,7 @@ function Resources() {
         <div className="grid sm:grid-cols-2 gap-5">
           {RESOURCE_DATA.map((r) => (
             <a key={r.title} href={r.link} target="_blank" rel="noopener noreferrer"
-              className="group border border-border rounded-xl p-4 sm:p-6 bg-card hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col gap-3 sm:gap-4">
+              className="group border border-border rounded-xl p-4 sm:p-6 bg-card hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col gap-3 sm:gap-4 min-w-0 overflow-hidden">
               <div className="flex items-start justify-between gap-4">
                 <div style={{ color: r.color }} className="group-hover:scale-110 transition-transform">
                   <Icon name={r.iconName} className="w-7 h-7" />
@@ -1461,7 +1461,7 @@ export default function App() {
       <div className="watermark-layer fixed inset-0 pointer-events-none select-none overflow-hidden z-0" aria-hidden="true">
         {/* Single centered logo — colored watermark, responsive */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ opacity: 0.22 }}>
-          <ImageWithFallback src={logoTL} alt="" className="w-[300px] h-[300px] sm:w-[480px] sm:h-[480px] lg:w-[680px] lg:h-[680px] max-w-none object-contain" />
+          <ImageWithFallback src={logoTL} alt="" className="w-[min(80vw,300px)] sm:w-[min(80vw,480px)] lg:w-[680px] h-auto object-contain" />
         </div>
       </div>
       <Navbar theme={theme} onToggleTheme={toggleTheme} />
