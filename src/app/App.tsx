@@ -58,6 +58,11 @@ function useTheme(): [Theme, () => void] {
   return [theme, () => setTheme((t) => (t === "dark" ? "light" : "dark"))];
 }
 
+// Disable browser scroll restoration so it never resets position on its own
+if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 function ThemeToggle({ theme, onToggle, className }: { theme: Theme; onToggle: () => void; className?: string }) {
   return (
     <button
@@ -216,17 +221,19 @@ function Navbar({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => v
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2 group min-w-0 flex-1 mr-2">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="flex items-center gap-2 group min-w-0 flex-1 mr-2 text-left">
           <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-8 h-8 sm:w-9 sm:h-9 object-contain shrink-0" />
           <div className="flex flex-col leading-none min-w-0">
             <span className="font-['Exo_2'] font-black text-xs sm:text-sm tracking-tight text-[#f5c518] group-hover:text-foreground transition-colors truncate">
               TA Raflie Nurivansyah
             </span>
-            <span className="font-['JetBrains_Mono'] text-[9px] sm:text-[10px] text-muted-foreground tracking-wider hidden xs:block truncate">
+            <span className="font-['JetBrains_Mono'] text-[9px] sm:text-[10px] text-muted-foreground tracking-wider hidden sm:block truncate">
               D3 TLI · Poltera · 2026
             </span>
           </div>
-        </a>
+        </button>
 
         <div className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map((l) => (
