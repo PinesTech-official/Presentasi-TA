@@ -216,14 +216,14 @@ function Navbar({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => v
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-8 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2 group min-w-0">
-          <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-9 h-9 object-contain shrink-0" />
+        <a href="#" className="flex items-center gap-2 group min-w-0 flex-1 mr-2">
+          <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-8 h-8 sm:w-9 sm:h-9 object-contain shrink-0" />
           <div className="flex flex-col leading-none min-w-0">
-            <span className="font-['Exo_2'] font-black text-sm tracking-tight text-[#f5c518] group-hover:text-foreground transition-colors truncate">
+            <span className="font-['Exo_2'] font-black text-xs sm:text-sm tracking-tight text-[#f5c518] group-hover:text-foreground transition-colors truncate">
               TA Raflie Nurivansyah
             </span>
-            <span className="font-['JetBrains_Mono'] text-[10px] text-muted-foreground tracking-wider hidden sm:block truncate">
-              D3 Teknik Listrik Industri · Poltera · 2026
+            <span className="font-['JetBrains_Mono'] text-[9px] sm:text-[10px] text-muted-foreground tracking-wider hidden xs:block truncate">
+              D3 TLI · Poltera · 2026
             </span>
           </div>
         </a>
@@ -292,15 +292,15 @@ function Hero() {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full pointer-events-none"
         style={{ background: "radial-gradient(ellipse, rgba(245,197,24,0.07) 0%, transparent 70%)" }} />
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-12 sm:py-20 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 py-10 sm:py-20 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
-          {/* Campus identity block */}
-          <div className="flex items-center gap-4 border border-[#f5c518]/25 rounded-xl bg-[#f5c518]/5 px-4 py-3 mb-7 w-fit">
-            <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-12 h-12 object-contain shrink-0" />
-            <div>
-              <div className="font-['Exo_2'] font-bold text-sm text-[#f5c518] leading-snug">Politeknik Negeri Madura</div>
-              <div className="font-['DM_Sans'] text-xs text-muted-foreground">Program Studi D3 Teknik Listrik Industri</div>
-              <div className="font-['JetBrains_Mono'] text-[10px] text-muted-foreground/60 mt-0.5">Tugas Akhir · 2026</div>
+          {/* Campus identity block — compact on mobile */}
+          <div className="flex items-center gap-3 border border-[#f5c518]/25 rounded-xl bg-[#f5c518]/5 px-3 py-2.5 mb-6 w-fit max-w-full">
+            <ImageWithFallback src={logoTL} alt="Logo Teknik Listrik Poltera" className="w-9 h-9 sm:w-12 sm:h-12 object-contain shrink-0" />
+            <div className="min-w-0">
+              <div className="font-['Exo_2'] font-bold text-xs sm:text-sm text-[#f5c518] leading-snug">Politeknik Negeri Madura</div>
+              <div className="font-['DM_Sans'] text-[10px] sm:text-xs text-muted-foreground truncate">D3 Teknik Listrik Industri · Poltera</div>
+              <div className="font-['JetBrains_Mono'] text-[9px] text-muted-foreground/60 mt-0.5">Tugas Akhir · 2026</div>
             </div>
           </div>
 
@@ -308,46 +308,48 @@ function Hero() {
             <span className="text-[#f5c518]">AUTO</span>PONG
           </h1>
 
-          <div className="font-['DM_Sans'] text-base text-muted-foreground mb-1">
+          <div className="font-['DM_Sans'] text-sm sm:text-base text-muted-foreground mb-1">
             <span className="text-foreground font-semibold">Raflie Nurivansyah</span>
           </div>
 
-          <p className="font-['DM_Sans'] text-base text-muted-foreground mb-2 leading-relaxed">
+          <p className="font-['DM_Sans'] text-sm sm:text-base text-muted-foreground mb-2 leading-relaxed">
             Sistem Peluncur Bola Ping-Pong Otomatis Berbasis{" "}
             <span className="text-[#f5c518] font-medium">ESP32</span>
           </p>
-          <p className="font-['DM_Sans'] text-sm text-muted-foreground/70 mb-10 leading-relaxed max-w-md">
+          <p className="font-['DM_Sans'] text-xs sm:text-sm text-muted-foreground/70 mb-7 leading-relaxed max-w-md">
             Perancangan dan implementasi mesin peluncur bola tenis meja otomatis dengan kontrol kecepatan, frekuensi, dan arah menggunakan mikrokontroler ESP32, motor DC, dan sistem relay.
           </p>
 
-          <div className="flex flex-wrap gap-3">
+          {/* Buttons — 2-col grid on mobile so they fit without wrapping to 3 rows */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
             <a href="#overview"
-              className="inline-flex items-center gap-2 bg-[#f5c518] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-6 py-3 rounded hover:bg-[#d9ab0a] transition-colors">
+              className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-2 bg-[#f5c518] text-[#060d1a] font-['DM_Sans'] font-semibold text-sm px-5 py-2.5 rounded hover:bg-[#d9ab0a] transition-colors">
               Lihat Project <ChevronDown className="w-4 h-4" />
             </a>
             <a href="#resources"
-              className="inline-flex items-center gap-2 border border-border text-foreground font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:border-[#f5c518]/50 hover:text-[#f5c518] transition-colors">
-              Resources <ExternalLink className="w-4 h-4" />
+              className="inline-flex items-center justify-center gap-1.5 border border-border text-foreground font-['DM_Sans'] font-medium text-sm px-4 py-2.5 rounded hover:border-[#f5c518]/50 hover:text-[#f5c518] transition-colors">
+              Resources <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a href="https://raflie-nurivansyah-portfolio-websit.vercel.app/" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-[#f5c518]/40 text-[#f5c518] font-['DM_Sans'] font-medium text-sm px-6 py-3 rounded hover:bg-[#f5c518]/10 transition-colors">
-              CV / Portfolio <ExternalLink className="w-4 h-4" />
+              className="inline-flex items-center justify-center gap-1.5 border border-[#f5c518]/40 text-[#f5c518] font-['DM_Sans'] font-medium text-sm px-4 py-2.5 rounded hover:bg-[#f5c518]/10 transition-colors">
+              CV / Portfolio <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        {/* Stat cards — tighter on mobile */}
+        <div className="grid grid-cols-2 gap-3">
           {[
             { val: "ESP32", label: "Mikrokontroler", sub: "240 MHz Dual-Core" },
-            { val: "PWM",   label: "Speed Control",  sub: "Variable frequency" },
+            { val: "PWM",   label: "Speed Control",  sub: "Variable freq." },
             { val: "2-CH",  label: "Relay Module",   sub: "Opto-isolated" },
             { val: "DC",    label: "Motor Driver",   sub: "L298N H-Bridge" },
           ].map((s) => (
             <div key={s.label}
-              className="border border-border rounded-lg p-5 bg-card hover:border-[#f5c518]/30 transition-colors group">
-              <div className="font-['Exo_2'] font-black text-2xl text-[#f5c518] group-hover:text-foreground transition-colors mb-1">{s.val}</div>
-              <div className="font-['DM_Sans'] font-semibold text-sm text-foreground mb-0.5">{s.label}</div>
-              <div className="font-['JetBrains_Mono'] text-xs text-muted-foreground">{s.sub}</div>
+              className="border border-border rounded-lg p-3 sm:p-5 bg-card hover:border-[#f5c518]/30 transition-colors group">
+              <div className="font-['Exo_2'] font-black text-xl sm:text-2xl text-[#f5c518] group-hover:text-foreground transition-colors mb-1">{s.val}</div>
+              <div className="font-['DM_Sans'] font-semibold text-xs sm:text-sm text-foreground mb-0.5">{s.label}</div>
+              <div className="font-['JetBrains_Mono'] text-[10px] sm:text-xs text-muted-foreground leading-tight">{s.sub}</div>
             </div>
           ))}
         </div>
@@ -504,7 +506,7 @@ function SummaryStats({ tab }: { tab: TabId }) {
     const min = Math.min(...allVals).toFixed(2);
     const max = Math.max(...allVals).toFixed(2);
     return (
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
         <StatCard label="Avg Response" value={`${avg}s`} color="#f5c518" iconName="activity" />
         <StatCard label="Min Response" value={`${min}s`} color="#4ade80" iconName="activity" />
         <StatCard label="Max Response" value={`${max}s`} color="#e8605a" iconName="activity" />
@@ -516,7 +518,7 @@ function SummaryStats({ tab }: { tab: TabId }) {
     const exec  = giftData.reduce((a, r) => a + r.Dieksekusi, 0);
     const acc   = ((exec / total) * 100).toFixed(1);
     return (
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
         <StatCard label="Total Gift Masuk" value={total}     color="#f5c518" iconName="database" />
         <StatCard label="Dieksekusi"        value={exec}      color="#4ade80" iconName="activity" />
         <StatCard label="Akurasi"           value={`${acc}%`} color="#e8605a" iconName="activity" />
@@ -527,7 +529,7 @@ function SummaryStats({ tab }: { tab: TabId }) {
   const exec  = likeData.reduce((a, r) => a + r.Dieksekusi, 0);
   const acc   = ((exec / total) * 100).toFixed(1);
   return (
-    <div className="grid grid-cols-3 gap-3 mb-6">
+    <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
       <StatCard label="Total Like"  value={total}     color="#f5c518" iconName="activity" />
       <StatCard label="Dieksekusi"  value={exec}      color="#4ade80" iconName="activity" />
       <StatCard label="Akurasi"     value={`${acc}%`} color="#e8605a" iconName="activity" />
@@ -1002,14 +1004,14 @@ function GiftTierSection() {
         </div>
 
         {/* Detail panel */}
-        <div className="border rounded-2xl p-6 sm:p-8 transition-all"
+        <div className="border rounded-2xl p-4 sm:p-8 transition-all"
           style={{ borderColor: t.color + "40", background: t.glow }}>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="font-['JetBrains_Mono'] text-xs border px-3 py-1 rounded-full"
                   style={{ color: t.color, borderColor: t.color + "50" }}>{t.tier}</span>
-                <span className="font-['Exo_2'] font-bold text-2xl text-foreground">{t.coins}</span>
+                <span className="font-['Exo_2'] font-bold text-xl sm:text-2xl text-foreground">{t.coins}</span>
               </div>
               <p className="font-['DM_Sans'] text-muted-foreground mb-6">{t.desc}</p>
 
@@ -1355,18 +1357,19 @@ function Pembimbing() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 max-w-3xl">
           {ADVISORS.map((a) => (
             <div key={a.nip}
-              className="group border border-border rounded-2xl bg-card overflow-hidden hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col sm:flex-row items-center sm:items-stretch">
-              <div className="w-full sm:w-40 shrink-0 aspect-square sm:aspect-auto sm:h-auto overflow-hidden bg-muted">
+              className="group border border-border rounded-2xl bg-card overflow-hidden hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-row items-stretch">
+              {/* Photo — fixed width so text always visible on mobile */}
+              <div className="w-28 sm:w-44 shrink-0 overflow-hidden bg-muted">
                 <ImageWithFallback src={a.photo} alt={`Foto ${a.role} — ${a.name}`}
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
               </div>
-              <div className="p-5 flex flex-col justify-center text-center sm:text-left gap-2 flex-1 min-w-0">
-                <span className="font-['JetBrains_Mono'] text-[11px] px-2.5 py-1 rounded-full self-center sm:self-start"
+              <div className="p-3 sm:p-5 flex flex-col justify-center text-left gap-1.5 sm:gap-2 flex-1 min-w-0">
+                <span className="font-['JetBrains_Mono'] text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full self-start"
                   style={{ background: `${a.color}1a`, color: a.color }}>
                   {a.role}
                 </span>
-                <h3 className="font-['Exo_2'] font-bold text-lg text-foreground leading-snug">{a.name}</h3>
-                <div className="font-['JetBrains_Mono'] text-xs text-muted-foreground">
+                <h3 className="font-['Exo_2'] font-bold text-sm sm:text-lg text-foreground leading-snug">{a.name}</h3>
+                <div className="font-['JetBrains_Mono'] text-[10px] sm:text-xs text-muted-foreground">
                   NIP. {a.nip}
                 </div>
               </div>
@@ -1395,7 +1398,7 @@ function Resources() {
         <div className="grid sm:grid-cols-2 gap-5">
           {RESOURCE_DATA.map((r) => (
             <a key={r.title} href={r.link} target="_blank" rel="noopener noreferrer"
-              className="group border border-border rounded-xl p-6 bg-card hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col gap-4">
+              className="group border border-border rounded-xl p-4 sm:p-6 bg-card hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col gap-3 sm:gap-4">
               <div className="flex items-start justify-between gap-4">
                 <div style={{ color: r.color }} className="group-hover:scale-110 transition-transform">
                   <Icon name={r.iconName} className="w-7 h-7" />
@@ -1453,7 +1456,7 @@ function Footer() {
 export default function App() {
   const [theme, toggleTheme] = useTheme();
   return (
-    <div className="min-h-screen bg-background text-foreground relative" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
       {/* Sitewide logo watermark — fixed background, isolated compositor layer */}
       <div className="watermark-layer fixed inset-0 pointer-events-none select-none overflow-hidden z-0" aria-hidden="true">
         {/* Single centered logo — colored watermark, responsive */}
