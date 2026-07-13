@@ -8,6 +8,8 @@ import img4 from "@/imports/20260429_212530.jpg";
 import img5 from "@/imports/20260524_135809.jpg";
 import img6 from "@/imports/20260530_210611.jpg";
 import logoTL from "@/imports/logo_TLI__2_-Photoroom.png";
+import advisor1 from "@/imports/WhatsApp_Image_2026-07-13_at_4.02.23_PM.jpeg";
+import advisor2 from "@/imports/WhatsApp_Image_2026-07-13_at_4.03.06_PM.jpeg";
 import {
   Menu, X, ExternalLink, ChevronDown, Cpu, Zap, Settings,
   Activity, FolderOpen, Code2, FileText, Database,
@@ -76,7 +78,25 @@ const NAV_LINKS = [
   { label: "Gift Tier", href: "#gifttier" },
   { label: "Pengujian", href: "#testing" },
   { label: "Dokumentasi", href: "#gallery" },
+  { label: "Pembimbing", href: "#pembimbing" },
   { label: "Resources", href: "#resources" },
+];
+
+const ADVISORS = [
+  {
+    photo: advisor1,
+    role: "Dosen Pembimbing 1",
+    name: "A Labib Fardany Faisal, M.T.I.",
+    nip: "199304132022031015",
+    color: "#f5c518",
+  },
+  {
+    photo: advisor2,
+    role: "Dosen Pembimbing 2",
+    name: "Mohammad Nur, S.Si., M.T.",
+    nip: "198605082019031007",
+    color: "#e8605a",
+  },
 ];
 
 const PHOTOS = [
@@ -141,6 +161,8 @@ const RESOURCE_DATA = [
   { iconName: "database", title: "Rekap Data",                desc: "Kumpulan data hasil pengujian Autopong — performa launcher, kecepatan bola, konsistensi lontaran, dan analisis statistik.",     link: "https://drive.google.com/drive/folders/1yPCkfyzhHui20bvpzhG-B7z8Vre1P7Na", color: "#e8605a" },
   { iconName: "code",     title: "Code Autopong",             desc: "Source code firmware ESP32 Autopong — kontrol motor DC, logika relay, konfigurasi PWM, dan sistem peluncur bola ping-pong otomatis.", link: "https://drive.google.com/drive/folders/1gcDdH9tvrbBjdR87syKsXYxbO97XCsRt", color: "#f5c518" },
   { iconName: "folder",   title: "File Tugas Akhir",          desc: "Berkas lengkap Tugas Akhir — laporan, proposal, presentasi, dan semua dokumen resmi yang dibutuhkan untuk sidang.",             link: "https://drive.google.com/drive/folders/1RIH6ZjHhlWI4cnVoScGKPoEC3lEn7qqX", color: "#a3b8d8" },
+  { iconName: "file",     title: "Laporan Bimbingan",         desc: "Catatan lengkap proses bimbingan Tugas Akhir bersama dosen pembimbing — progres, revisi, dan arahan di setiap sesi.",           link: "https://bit.ly/4prJZmP", color: "#4ade80" },
+  { iconName: "activity", title: "Uji Similarity",            desc: "Hasil pengecekan tingkat kemiripan (plagiarisme) laporan Tugas Akhir untuk memastikan orisinalitas karya tulis.",              link: "https://bit.ly/4wrRqN6", color: "#e8605a" },
 ];
 
 // ─── CHART DATA ──────────────────────────────────────────────────────────────
@@ -1316,6 +1338,46 @@ function Gallery() {
   );
 }
 
+// ─── PEMBIMBING ──────────────────────────────────────────────────────────────
+
+function Pembimbing() {
+  return (
+    <section id="pembimbing" className="py-16 sm:py-24">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
+        <div className="mb-10 sm:mb-14">
+          <div className="font-['JetBrains_Mono'] text-xs text-[#f5c518] tracking-widest mb-4 uppercase">— Dosen Pembimbing</div>
+          <h2 className="font-['Exo_2'] font-bold text-3xl sm:text-4xl text-foreground mb-3">Pembimbing Tugas Akhir</h2>
+          <p className="font-['DM_Sans'] text-muted-foreground max-w-xl">
+            Tugas Akhir Autopong disusun di bawah bimbingan dosen Program Studi D3 Teknik Listrik Industri, Politeknik Negeri Madura.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 max-w-3xl">
+          {ADVISORS.map((a) => (
+            <div key={a.nip}
+              className="group border border-border rounded-2xl bg-card overflow-hidden hover:border-[#f5c518]/40 transition-all hover:-translate-y-0.5 flex flex-col sm:flex-row items-center sm:items-stretch">
+              <div className="w-full sm:w-40 shrink-0 aspect-square sm:aspect-auto sm:h-auto overflow-hidden bg-muted">
+                <ImageWithFallback src={a.photo} alt={`Foto ${a.role} — ${a.name}`}
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div className="p-5 flex flex-col justify-center text-center sm:text-left gap-2 flex-1 min-w-0">
+                <span className="font-['JetBrains_Mono'] text-[11px] px-2.5 py-1 rounded-full self-center sm:self-start"
+                  style={{ background: `${a.color}1a`, color: a.color }}>
+                  {a.role}
+                </span>
+                <h3 className="font-['Exo_2'] font-bold text-lg text-foreground leading-snug">{a.name}</h3>
+                <div className="font-['JetBrains_Mono'] text-xs text-muted-foreground">
+                  NIP. {a.nip}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── RESOURCES ───────────────────────────────────────────────────────────────
 
 function Resources() {
@@ -1339,7 +1401,7 @@ function Resources() {
                   <Icon name={r.iconName} className="w-7 h-7" />
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-[#f5c518] transition-colors">
-                  <span className="font-['JetBrains_Mono'] text-xs">Google Drive</span>
+                  <span className="font-['JetBrains_Mono'] text-xs">{r.link.includes("drive.google") ? "Google Drive" : "Link Eksternal"}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </div>
               </div>
@@ -1395,7 +1457,7 @@ export default function App() {
       {/* Sitewide logo watermark — fixed background, isolated compositor layer */}
       <div className="watermark-layer fixed inset-0 pointer-events-none select-none overflow-hidden z-0" aria-hidden="true">
         {/* Single centered logo — colored watermark, responsive */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ opacity: 0.08 }}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ opacity: 0.22 }}>
           <ImageWithFallback src={logoTL} alt="" className="w-[300px] h-[300px] sm:w-[480px] sm:h-[480px] lg:w-[680px] lg:h-[680px] max-w-none object-contain" />
         </div>
       </div>
@@ -1408,6 +1470,7 @@ export default function App() {
       <Reveal><GiftTierSection /></Reveal>
       <Reveal><Testing /></Reveal>
       <Reveal><Gallery /></Reveal>
+      <Reveal><Pembimbing /></Reveal>
       <Reveal><Resources /></Reveal>
       <Footer />
     </div>
